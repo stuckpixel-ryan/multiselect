@@ -35,6 +35,7 @@ $.widget("ui.multiselect", {
 		animated: 'fast',
 		show: 'slideDown',
 		hide: 'slideUp',
+		counterLocation: 'top', // options are top, bottom, hidden
 		dividerLocation: 0.6,
 		nodeComparator: function(node1,node2) {
 			var text1 = node1.text(),
@@ -47,13 +48,32 @@ $.widget("ui.multiselect", {
 		this.id = this.element.attr("id");
 		this.container = $('<div class="ui-multiselect ui-helper-clearfix ui-widget"></div>').insertAfter(this.element);
 		this.count = 0; // number of currently selected options
-		this.selectedContainer = $('<div class="selected"></div>').appendTo(this.container);
-		this.availableContainer = $('<div class="available"></div>').appendTo(this.container);
-		this.selectedActions = $('<div class="actions ui-widget-header ui-helper-clearfix"><span class="count">0 '+$.ui.multiselect.locale.itemsCount+'</span><a href="#" class="remove-all">'+$.ui.multiselect.locale.removeAll+'</a></div>').appendTo(this.selectedContainer);
-		this.availableActions = $('<div class="actions ui-widget-header ui-helper-clearfix"><input type="text" class="search empty ui-widget-content ui-corner-all"/><a href="#" class="add-all">'+$.ui.multiselect.locale.addAll+'</a></div>').appendTo(this.availableContainer);
-		this.selectedList = $('<ul class="selected connected-list"><li class="ui-helper-hidden-accessible"></li></ul>').bind('selectstart', function(){return false;}).appendTo(this.selectedContainer);
-		this.availableList = $('<ul class="available connected-list"><li class="ui-helper-hidden-accessible"></li></ul>').bind('selectstart', function(){return false;}).appendTo(this.availableContainer);
 		
+// allow for a more subtle counter using counterLocation option
+this.selectedContainer = $('<div class="selected"></div>').appendTo(this.container);
+		
+		this.availableContainer = $('<div class="available"></div>').appendTo(this.container);
+		this.availableActions = $('<div class="actions ui-widget-header ui-helper-clearfix"><input type="text" class="search empty ui-widget-content ui-corner-all"/><a href="#" class="add-all">'+$.ui.multiselect.locale.addAll+'</a></div>').appendTo(this.availableContainer);
+		this.availableList = $('<ul class="available connected-list"><li class="ui-helper-hidden-accessible"></li></ul>').bind('selectstart', function(){return false;}).appendTo(this.availableContainer);
+
+		
+		if(this.options.counterLocation != 'top'){
+			this.selectedActions = $('<div class="actions ui-widget-header ui-helper-clearfix"><a href="#" class="remove-all">'+$.ui.multiselect.locale.removeAll+'</a></div>').appendTo(this.selectedContainer);
+		}
+		else{
+			this.selectedActions = $('<div class="actions ui-widget-header ui-helper-clearfix"><span class="count">0 '+$.ui.multiselect.locale.itemsCount+'</span><a href="#" class="remove-all">'+$.ui.multiselect.locale.removeAll+'</a></div>').appendTo(this.selectedContainer);
+		}
+		
+		this.selectedList = $('<ul class="selected connected-list"><li class="ui-helper-hidden-accessible"></li></ul>').bind('selectstart', function(){return false;}).appendTo(this.selectedContainer);
+		
+
+		if(this.options.counterLocation == 'bottom'){
+			this.counterContainer = $('<div class="counter ui-helper-clearfix"></div>').appendTo(this.selectedContainer);
+			this.counter = $('<span class="count">0 '+$.ui.multiselect.locale.itemsCount+'</span>').appendTo(this.counterContainer);
+		}
+
+
+
 		var that = this;
 
 		// set dimensions
